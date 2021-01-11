@@ -170,7 +170,7 @@ def get_child_sitemap_in_url_ids_on_db(start, end):
 def set_translate_data_on_db(list_data, child_sitemap_in_url_id):
     connection = create_connection_db()
     data_base = connection.cursor()
-    sql = """INSERT INTO translate_data2 (child_sitemap_in_url_id, searched_word, value) VALUES (%s,%s, %s);"""
+    sql = """INSERT INTO translate_data (child_sitemap_in_url_id, searched_word, value) VALUES (%s,%s, %s);"""
     data_base.execute(sql, (child_sitemap_in_url_id, list_data[0], list_data[1]))
     connection.commit()
     connection.close()
