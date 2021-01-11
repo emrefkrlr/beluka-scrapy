@@ -5,6 +5,9 @@ import requests
 from mysql.connector import errorcode
 from urllib.parse import unquote
 import time
+import logging
+
+logging.basicConfig(filename='app.log', filemode='a+', format='%(name)s - %(levelname)s - %(message)s')
 
 
 def main():
@@ -23,25 +26,29 @@ def main():
         #save_child_sitemap_url = set_child_sitemap_in_url(results)
         #print('saved parent id:', parent_url[0])
 
-    # SAVED TRASNLATE DATA
-    get_child_sitemap_urls = get_child_sitemap_in_url_ids_on_db(67863, 80000)
-    delay_time = 1300
-    steps = 0
-    for page in get_child_sitemap_urls:
-        steps += 1
-        child_sitemap_in_url_id = page[0]
-        sayfa = url_decode(page[1])
-        get_translate_data = get_page_all_word(page[1])
-        for data in get_translate_data:
-            saved_data = set_translate_data_on_db(data, child_sitemap_in_url_id)
-        print('saved detail...\npage:  ', sayfa, '\nchild_sitemap_id: ', child_sitemap_in_url_id)
-        if steps > delay_time:
-            print('delay....', steps)
-            time.sleep(120)
-            delay_time += 2000
+    try:
+        # SAVED TRASNLATE DATA
+        get_child_sitemap_urls = get_child_sitemap_in_url_ids_on_db(95479, 100000)
+        delay_time = 1300
+        steps = 0
+        for page in get_child_sitemap_urls:
+            steps += 1
+            child_sitemap_in_url_id = page[0]
+            sayfa = url_decode(page[1])
+            get_translate_data = get_page_all_word(page[1])
+            for data in get_translate_data:
+                saved_data = set_translate_data_on_db(data, child_sitemap_in_url_id)
+            print('saved detail...\npage:  ', sayfa, '\nchild_sitemap_id: ', child_sitemap_in_url_id)
+            if steps > delay_time:
+                print('delay....', steps)
+                time.sleep(120)
+                delay_time += 2000
+    except Exception as e:
+        logging.error('{} -  id: {}'.format(e, child_sitemap_in_url_id))
 
 
-    # test_url = "http://www.beluka.de/woerterbuch/deutschtuerkisch/Arnavutluk%C2%B4a+ait"
+
+    # test_url = "http://www.beluka.de/woerterbuch/deutschtuerkisch/Avrupa%C2%B4da+u%C3%A7ak+markas%C4%B1"
     # for i in test(test_url):
     #     print(i)
 
@@ -163,7 +170,7 @@ def get_child_sitemap_in_url_ids_on_db(start, end):
 def set_translate_data_on_db(list_data, child_sitemap_in_url_id):
     connection = create_connection_db()
     data_base = connection.cursor()
-    sql = """INSERT INTO translate_data (child_sitemap_in_url_id, searched_word, value) VALUES (%s,%s, %s);"""
+    sql = """INSERT INTO translate_data2 (child_sitemap_in_url_id, searched_word, value) VALUES (%s,%s, %s);"""
     data_base.execute(sql, (child_sitemap_in_url_id, list_data[0], list_data[1]))
     connection.commit()
     connection.close()
